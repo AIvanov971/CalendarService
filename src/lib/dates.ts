@@ -1,18 +1,18 @@
 import {
-  addDays,
   addMonths,
   eachDayOfInterval,
   endOfMonth,
+  endOfWeek,
   format,
-  getDay,
   isSameMonth,
   parse,
   startOfMonth,
-  subDays,
+  startOfWeek,
 } from "date-fns";
 import { formatInTimeZone, fromZonedTime, toZonedTime } from "date-fns-tz";
 
 export const DEFAULT_TIMEZONE = "Europe/Sofia";
+export const DISPLAY_DATE_FORMAT = "dd/MM/yyyy";
 
 export function normalizeMonth(month?: string | null) {
   if (month && /^\d{4}-\d{2}$/.test(month)) {
@@ -44,8 +44,8 @@ export function getMonthGrid(month: string) {
   const monthStart = parse(`${month}-01`, "yyyy-MM-dd", new Date());
   const first = startOfMonth(monthStart);
   const last = endOfMonth(monthStart);
-  const gridStart = subDays(first, getDay(first));
-  const gridEnd = addDays(last, 6 - getDay(last));
+  const gridStart = startOfWeek(first, { weekStartsOn: 1 });
+  const gridEnd = endOfWeek(last, { weekStartsOn: 1 });
 
   return eachDayOfInterval({ start: gridStart, end: gridEnd }).map((day) => ({
     date: format(day, "yyyy-MM-dd"),
@@ -59,7 +59,7 @@ export function toUtcFromLocalDateTime(value: string, timezone: string) {
 }
 
 export function formatDateTimeInZone(date: Date, timezone: string) {
-  return formatInTimeZone(date, timezone, "MMM d, yyyy HH:mm");
+  return formatInTimeZone(date, timezone, `${DISPLAY_DATE_FORMAT} HH:mm`);
 }
 
 export function formatTimeInZone(date: Date, timezone: string) {
@@ -68,6 +68,13 @@ export function formatTimeInZone(date: Date, timezone: string) {
 
 export function formatDateInZone(date: Date, timezone: string) {
   return formatInTimeZone(date, timezone, "yyyy-MM-dd");
+}
+
+export function formatDateStringForDisplay(dateString: string) {
+  return format(
+    parse(dateString, "yyyy-MM-dd", new Date()),
+    DISPLAY_DATE_FORMAT
+  );
 }
 
 export function toDateTimeLocalValue(date: Date, timezone: string) {

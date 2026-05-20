@@ -31,6 +31,7 @@ import {
 import type { Calendar, Event } from "@/db/schema";
 import {
   formatDateInZone,
+  formatDateStringForDisplay,
   formatDateTimeInZone,
   formatTimeInZone,
   getMonthBounds,
@@ -44,7 +45,7 @@ type MonthViewProps = {
   month: string;
 };
 
-const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function inclusiveEndDate(dateString: string) {
   return format(
@@ -87,8 +88,10 @@ function eventDisplayRange(event: Event, timezone: string) {
     const end = inclusiveEndDate(event.allDayEnd);
 
     return event.allDayStart === end
-      ? event.allDayStart
-      : `${event.allDayStart} to ${end}`;
+      ? formatDateStringForDisplay(event.allDayStart)
+      : `${formatDateStringForDisplay(
+          event.allDayStart
+        )} to ${formatDateStringForDisplay(end)}`;
   }
 
   if (!event.startsAt || !event.endsAt) {
