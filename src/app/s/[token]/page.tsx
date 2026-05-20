@@ -178,6 +178,8 @@ export default async function SubscriberPage({
 }: {
   params: Promise<{ token: string }>;
 }) {
+  const brandName = "theastrologist.bg";
+  const brandUrl = "https://theastrologist.bg";
   const { token } = await params;
   const headerStore = await headers();
   const subscription = await getSubscriptionByToken(token);
@@ -236,13 +238,68 @@ export default async function SubscriberPage({
                 </div>
 
                 <div className="max-w-2xl space-y-5">
-                  <h1 className="text-balance text-4xl font-semibold leading-[1.02] text-white sm:text-5xl lg:text-6xl">
-                    {subscription.calendar.name}
-                  </h1>
+                  <div className="space-y-3">
+                    <h1 className="text-balance text-4xl font-semibold leading-[1.02] text-white sm:text-5xl lg:text-6xl">
+                      {subscription.calendar.name}
+                    </h1>
+                    <a
+                      href={brandUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex w-fit items-center gap-2 rounded-lg border border-white/10 bg-white/[0.055] px-3 py-2 text-sm font-semibold text-white/82 transition hover:border-white/20 hover:bg-white/[0.085] hover:text-white"
+                    >
+                      {brandName}
+                      <ExternalLinkIcon className="size-3.5 text-[var(--calendar-accent)]" />
+                    </a>
+                  </div>
                   <p className="max-w-xl text-pretty text-base leading-7 text-white/66 sm:text-lg">
                     A read-only calendar feed that stays fresh in Apple Calendar,
                     Google Calendar, Outlook, and any app that understands ICS.
                   </p>
+
+                  {openedInInstagram ? (
+                    <div className="rounded-lg border border-[#ffcf5a]/30 bg-[#ffcf5a]/10 p-3 text-sm text-[#ffe3a0]">
+                      Instagram can block calendar files and webcal links. Open
+                      this page in your device browser, or copy the HTTPS link.
+                    </div>
+                  ) : null}
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <ActionLink
+                      href={webcalUrl}
+                      detail="Best for iPhone, iPad, and macOS"
+                      icon={CalendarPlusIcon}
+                      label="Apple Calendar"
+                      rel="external"
+                      tone="primary"
+                    />
+                    <ActionLink
+                      href={googleUrl}
+                      detail="Add by URL in Google Calendar"
+                      icon={ExternalLinkIcon}
+                      label="Google Calendar"
+                      target="_blank"
+                      rel="noreferrer"
+                    />
+                    <ActionLink
+                      href={outlookUrl}
+                      detail="Subscribe through Outlook web"
+                      icon={ExternalLinkIcon}
+                      label="Outlook"
+                      target="_blank"
+                      rel="noreferrer"
+                    />
+                    <ActionLink
+                      href={feedUrl}
+                      detail="Save the raw calendar file"
+                      icon={DownloadIcon}
+                      label="Download .ics"
+                      download={`${subscription.calendar.slug}.ics`}
+                      target="_blank"
+                      rel="noreferrer"
+                      type="text/calendar"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -353,14 +410,12 @@ export default async function SubscriberPage({
         </div>
 
         <div className="mt-4 overflow-hidden rounded-[1.1rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_22px_70px_rgba(0,0,0,.28)] backdrop-blur-xl sm:p-5">
-          {openedInInstagram ? (
-            <div className="mb-4 rounded-lg border border-[#ffcf5a]/30 bg-[#ffcf5a]/10 p-3 text-sm text-[#ffe3a0]">
-              Instagram can block calendar files and webcal links. Open this
-              page in your device browser, or copy the HTTPS link.
-            </div>
-          ) : null}
+          <div className="flex flex-wrap gap-2">
+            <CopyButton value={feedUrl} label="Copy HTTPS link" />
+            <CopyButton value={webcalUrl} label="Copy webcal link" />
+          </div>
 
-          <div className="rounded-lg border border-white/10 bg-black/18 p-3">
+          <div className="mt-4 rounded-lg border border-white/10 bg-black/18 p-3">
             <div className="mb-2 flex items-center gap-2 text-sm font-medium text-white/82">
               <LinkIcon />
               Calendar feed URL
@@ -368,48 +423,6 @@ export default async function SubscriberPage({
             <div className="break-all rounded-md border border-white/8 bg-black/28 p-3 font-mono text-xs leading-relaxed text-white/58">
               {feedUrl}
             </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            <ActionLink
-              href={webcalUrl}
-              detail="Best for iPhone, iPad, and macOS"
-              icon={CalendarPlusIcon}
-              label="Apple Calendar"
-              rel="external"
-              tone="primary"
-            />
-            <ActionLink
-              href={googleUrl}
-              detail="Add by URL in Google Calendar"
-              icon={ExternalLinkIcon}
-              label="Google Calendar"
-              target="_blank"
-              rel="noreferrer"
-            />
-            <ActionLink
-              href={outlookUrl}
-              detail="Subscribe through Outlook web"
-              icon={ExternalLinkIcon}
-              label="Outlook"
-              target="_blank"
-              rel="noreferrer"
-            />
-            <ActionLink
-              href={feedUrl}
-              detail="Save the raw calendar file"
-              icon={DownloadIcon}
-              label="Download .ics"
-              download={`${subscription.calendar.slug}.ics`}
-              target="_blank"
-              rel="noreferrer"
-              type="text/calendar"
-            />
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <CopyButton value={feedUrl} label="Copy HTTPS link" />
-            <CopyButton value={webcalUrl} label="Copy webcal link" />
           </div>
         </div>
       </section>
