@@ -13,7 +13,6 @@ import {
   SparklesIcon,
   type LucideIcon,
 } from "lucide-react";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { CopyButton } from "@/components/feed/copy-button";
@@ -29,10 +28,6 @@ import { buildFeedUrl, buildWebcalUrl, getBaseUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
-
-function isInstagramBrowser(userAgent: string | null) {
-  return /\bInstagram\b/i.test(userAgent ?? "");
-}
 
 function safeAccentColor(value: string) {
   return /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)
@@ -179,9 +174,9 @@ export default async function SubscriberPage({
   params: Promise<{ token: string }>;
 }) {
   const brandName = "theastrologist.bg";
-  const brandUrl = "https://theastrologist.bg";
+  const brandUrl =
+    "https://www.instagram.com/theastrologist.bg?igsh=MWQ5aDA2MW1oNmpzYw%3D%3D&utm_source=qr";
   const { token } = await params;
-  const headerStore = await headers();
   const subscription = await getSubscriptionByToken(token);
 
   if (!subscription) {
@@ -191,9 +186,6 @@ export default async function SubscriberPage({
   const feedEvents = await getFeedEvents(subscription.calendar.id);
   const feedUrl = buildFeedUrl(await getBaseUrl(), token);
   const webcalUrl = buildWebcalUrl(feedUrl);
-  const openedInInstagram = isInstagramBrowser(
-    headerStore.get("user-agent")
-  );
   const googleUrl = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(
     feedUrl
   )}`;
@@ -256,13 +248,6 @@ export default async function SubscriberPage({
                     A read-only calendar feed that stays fresh in Apple Calendar,
                     Google Calendar, Outlook, and any app that understands ICS.
                   </p>
-
-                  {openedInInstagram ? (
-                    <div className="rounded-lg border border-[#ffcf5a]/30 bg-[#ffcf5a]/10 p-3 text-sm text-[#ffe3a0]">
-                      Instagram can block calendar files and webcal links. Open
-                      this page in your device browser, or copy the HTTPS link.
-                    </div>
-                  ) : null}
 
                   <div className="grid gap-3 sm:grid-cols-2">
                     <ActionLink
