@@ -53,6 +53,10 @@ export function buildFeedUrl(baseUrl: string, token: string) {
   return `${baseUrl}/api/feeds/${token}/calendar.ics`;
 }
 
+export function buildSubscriberUrl(baseUrl: string, token: string) {
+  return `${baseUrl}/s/${token}`;
+}
+
 export function buildWebcalUrl(feedUrl: string) {
   return feedUrl.replace(/^https?:\/\//, "webcal://");
 }

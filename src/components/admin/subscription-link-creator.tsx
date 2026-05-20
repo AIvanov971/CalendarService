@@ -60,10 +60,28 @@ export function SubscriptionLinkCreator({
       {state.feedUrl ? (
         <div className="flex flex-col gap-3 rounded-lg border bg-muted/35 p-3">
           <p className="text-sm font-medium">{state.success}</p>
-          <div className="break-all rounded-md bg-background p-3 font-mono text-xs text-muted-foreground">
-            {state.feedUrl}
+          {state.subscriberUrl ? (
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs font-medium text-muted-foreground">
+                Share page
+              </p>
+              <div className="break-all rounded-md bg-background p-3 font-mono text-xs text-muted-foreground">
+                {state.subscriberUrl}
+              </div>
+            </div>
+          ) : null}
+          <div className="flex flex-col gap-1.5">
+            <p className="text-xs font-medium text-muted-foreground">
+              Calendar feed
+            </p>
+            <div className="break-all rounded-md bg-background p-3 font-mono text-xs text-muted-foreground">
+              {state.feedUrl}
+            </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            {state.subscriberUrl ? (
+              <CopyButton value={state.subscriberUrl} label="Copy share page" />
+            ) : null}
             <CopyButton value={state.feedUrl} label="Copy HTTPS link" />
             {state.webcalUrl ? (
               <CopyButton value={state.webcalUrl} label="Copy webcal link" />

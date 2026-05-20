@@ -18,7 +18,12 @@ import { touchCalendar } from "@/lib/calendar-data";
 import { DEFAULT_TIMEZONE, toUtcFromLocalDateTime } from "@/lib/dates";
 import { verifyPassword } from "@/lib/password";
 import { createRawToken, hashToken } from "@/lib/tokens";
-import { buildFeedUrl, buildWebcalUrl, getBaseUrl } from "@/lib/url";
+import {
+  buildFeedUrl,
+  buildSubscriberUrl,
+  buildWebcalUrl,
+  getBaseUrl,
+} from "@/lib/url";
 
 export type FormState = {
   error?: string;
@@ -27,6 +32,7 @@ export type FormState = {
 
 export type CreateLinkState = FormState & {
   feedUrl?: string;
+  subscriberUrl?: string;
   webcalUrl?: string;
 };
 
@@ -424,11 +430,13 @@ export async function createSubscriptionLinkAction(
   await touchCalendar(calendarId);
   revalidatePath(`/admin/calendars/${calendarId}/settings`);
 
-  const feedUrl = buildFeedUrl(await getBaseUrl(), token);
+  const baseUrl = await getBaseUrl();
+  const feedUrl = buildFeedUrl(baseUrl, token);
 
   return {
     success: "Subscription link created. Copy it now; the raw token is not stored.",
     feedUrl,
+    subscriberUrl: buildSubscriberUrl(baseUrl, token),
     webcalUrl: buildWebcalUrl(feedUrl),
   };
 }

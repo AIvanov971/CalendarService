@@ -1,10 +1,10 @@
-import Link from "next/link";
 import {
   CalendarPlusIcon,
   DownloadIcon,
   ExternalLinkIcon,
   LinkIcon,
 } from "lucide-react";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { CopyButton } from "@/components/feed/copy-button";
@@ -21,12 +21,17 @@ import { buildFeedUrl, buildWebcalUrl, getBaseUrl } from "@/lib/url";
 
 export const dynamic = "force-dynamic";
 
+function isInstagramBrowser(userAgent: string | null) {
+  return /\bInstagram\b/i.test(userAgent ?? "");
+}
+
 export default async function SubscriberPage({
   params,
 }: {
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
+  const headerStore = await headers();
   const subscription = await getSubscriptionByToken(token);
 
   if (!subscription) {
@@ -35,6 +40,9 @@ export default async function SubscriberPage({
 
   const feedUrl = buildFeedUrl(await getBaseUrl(), token);
   const webcalUrl = buildWebcalUrl(feedUrl);
+  const openedInInstagram = isInstagramBrowser(
+    headerStore.get("user-agent")
+  );
   const googleUrl = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(
     feedUrl
   )}`;
@@ -56,6 +64,13 @@ export default async function SubscriberPage({
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
+          {openedInInstagram ? (
+            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+              Instagram can block calendar files and webcal links. Open this
+              page in your device browser, or copy the HTTPS link.
+            </div>
+          ) : null}
+
           <div className="rounded-lg border bg-muted/30 p-3">
             <div className="mb-2 flex items-center gap-2 text-sm font-medium">
               <LinkIcon />
@@ -67,34 +82,43 @@ export default async function SubscriberPage({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Link href={webcalUrl} className={buttonVariants()}>
+            <a
+              href={webcalUrl}
+              className={buttonVariants()}
+              rel="external"
+            >
               <CalendarPlusIcon data-icon="inline-start" />
               Apple Calendar
-            </Link>
-            <Link
+            </a>
+            <a
               href={googleUrl}
               target="_blank"
+              rel="noreferrer"
               className={buttonVariants({ variant: "outline" })}
             >
               <ExternalLinkIcon data-icon="inline-start" />
               Google Calendar
-            </Link>
-            <Link
+            </a>
+            <a
               href={outlookUrl}
               target="_blank"
+              rel="noreferrer"
               className={buttonVariants({ variant: "outline" })}
             >
               <ExternalLinkIcon data-icon="inline-start" />
               Outlook
-            </Link>
-            <Link
+            </a>
+            <a
               href={feedUrl}
               className={buttonVariants({ variant: "secondary" })}
-              download
+              download={`${subscription.calendar.slug}.ics`}
+              target="_blank"
+              rel="noreferrer"
+              type="text/calendar"
             >
               <DownloadIcon data-icon="inline-start" />
               Download .ics
-            </Link>
+            </a>
           </div>
 
           <div className="flex flex-wrap gap-2">
