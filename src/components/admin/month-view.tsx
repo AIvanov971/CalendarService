@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { deleteEventAction } from "@/app/actions";
+import { RememberCalendarMonth } from "@/components/admin/remember-calendar-month";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -111,6 +112,7 @@ export function MonthView({ calendar, events, month }: MonthViewProps) {
 
   return (
     <div className="flex flex-col gap-5">
+      <RememberCalendarMonth calendarId={calendar.id} month={month} />
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">

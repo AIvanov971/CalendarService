@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { EventForm } from "@/components/admin/event-form";
@@ -12,6 +13,7 @@ import {
 import { requireAdmin } from "@/lib/auth";
 import { getCalendar, getMonthEvents } from "@/lib/calendar-data";
 import { normalizeMonth } from "@/lib/dates";
+import { lastOpenedMonthCookieName } from "@/lib/month-preferences";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +33,11 @@ export default async function CalendarPage({
     notFound();
   }
 
-  const month = normalizeMonth(monthParam);
+  const cookieStore = await cookies();
+  const rememberedMonth = cookieStore.get(
+    lastOpenedMonthCookieName(calendar.id)
+  )?.value;
+  const month = normalizeMonth(monthParam ?? rememberedMonth);
   const monthEvents = await getMonthEvents(calendar, month);
 
   return (
